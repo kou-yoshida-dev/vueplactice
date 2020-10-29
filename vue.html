@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
+
+<script src="jQuery.js"></script>
+<link rel="stylesheet" href="b/css/bootstrap.css" >
+<script src="b/js/bootstrap.js"></script>
+<link rel="stylesheet" href="b/style.css" >
+
+
+
+
+</head>
+<body>
+
+
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-5">
+        <a class="navbar-brand" href="#">
+            <img src="b/logo1.png">
+            
+        </a>
+       
+    
+    </nav>
+
+
+
+
+
+    <div id="app" class="row">
+        
+        
+
+
+
+        <div class="col-12" style="margin-top:100px;">
+
+            <ul>
+                <li v-for="(n,index) in task.length">
+
+                    <h2 style="margin:0; margin-right:30px;display:inline-block ; font-size: 30px;">{{task[index]}}</h2>
+                    <p style="margin:0; display:inline-block" v-on:click="fadetask(index)">...</p>
+                    
+                    <div id="f" class="none" v-bind:class="{show:active[index]}">
+                        
+                        <button class="mr-4 ml-4 btn btn-sm btn-outline-danger" v-on:click="deltask(index)">諦める</button>
+                        
+                        <button class="btn btn-sm btn-outline-warning" v-on:click="change(index)">変更</button>
+                        <input class="" type="text" v-model="changeitem" placeholder="変更内容">
+                    </div>
+
+                    
+                </li>
+                
+
+
+                <div class="mt-3">
+
+                    <input class="form-control" type="text" v-model="taskin" placeholder="目標">
+                    <button class="mt-3 form-control btn btn-primary" v-on:click="addtask()">タスク追加</button>
+                </div>
+            </ul>
+
+
+        </div>
+
+
+
+
+        <div class="mi col-6">
+
+            
+            <p class="text-center">現在のミッション数....{{this.number.length}}</p>
+            
+            <div class="ml-4 col-10">
+    
+                <input type="text" v-model="inp">
+                <p>{{inp}}</p>
+                <button class="ml-5  btn btn-primary" v-on:click="additem">追加</button>
+    
+            </div>
+            <ul>
+                
+                <li v-for="(n,index) in number.length">
+                    <div id="i">
+                        <p>{{n}}個目のミッションは、、</p>
+                        <p style="margin:10px 20px; border:solid 1px #ff9100; padding:20px 0; font-weight: bold; font-size: 36px;">{{mission[index]}}</p>
+                        <p class="mb-3">です！</p>
+    
+    
+                        <button class="mr-3 btn btn-success" v-on:click="add(index)">積み上げ</button>
+                        <button class="btn btn-success" v-on:click="de(index)">減らす</button>
+                        
+                        <p class="mt-4"><strong style="font-size: 24px;">{{datasets[index]}}</strong>日間の積み上げ！</p>
+                        
+                        
+                        
+                        
+                        
+                        <button class=" btn btn-origin" v-on:click="delitem(index)">削除</button>
+                    </div>
+                    
+                </li>
+            </ul>
+
+
+
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        </div>
+        
+        <canvas class="col-6" id="charts"></canvas>
+  
+        
+        
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    <script src="vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.bundle.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+    <script>
+
+        var app= new Vue({
+            el:'#app',
+            data:{
+                datasets:[],
+                number:[],
+                mission:[],
+                task:[],
+                inp:'3キロ走る',
+                taskin:'',
+                active:[],
+                changeitem:'',
+                // datasets: [0, 0, 0, 0, 0, 0],
+                graphSelected: 'bar'
+               
+            },
+            watch: {
+                    datasets: {
+                        handler() {
+                            this.canvas.data.datasets[0].data = this.datasets;
+                            
+                            this.canvas.update();
+                        }
+                    },
+                        // ここで変更に対応している
+
+            },
+            mounted() {
+                       this.chart();
+            },
+            methods:{
+                add:function(index){
+                    // this.datasets[index]+=1;
+                    this.datasets.splice(index,1,this.datasets[index]+1);
+                  
+                },
+                de:function(index){
+                    // this.datasets[index]-=1;
+                    // this.datasets.splice();
+                    this.datasets.splice(index,1,this.datasets[index]-1);
+                },
+                additem:function(){
+                    this.number.push(this.number.length+1);
+                    this.datasets.push(0);
+                    this.mission.push(this.inp);
+
+                },
+                delitem:function(index){
+                    // this.number-=1;
+                    this.number.splice(index,1);
+                    this.datasets.splice(index,1);
+                    this.mission.splice(index,1);
+                },
+                addtask:function(){
+                    this.task.push(this.taskin);
+                    // this.d.push(false);
+
+                    this.active.push(false);
+
+                    console.log(this.active);
+                    
+                },
+                deltask:function(index){
+                    this.task.splice(index,1);
+
+                },
+                fadetask:function(index){
+
+                    if(this.active[index]==true){
+                        this.active.splice(index,1,false);
+
+                        console.log(this.active);
+
+                    } else {
+                        this.active.splice(index,1,true);
+
+                        console.log(this.active);
+                    }
+                    
+                    
+                    
+                },
+                change:function(index){
+                    this.task.splice(index,1,this.changeitem)
+                },
+                chart() {
+            var vm = this;
+            var ctx = document.getElementById("charts");
+            vm.canvas = new Chart(ctx, {
+                type: 'bar',
+
+                data: {
+                    // labels: Array(vm.datasets.length),
+                    labels: ['aa','bb','cc','dd','ee','ff'],
+                    datasets: [{
+                        label: 'グラフ',
+                        backgroundColor: '#20B2AA',
+                        data: vm.datasets
+                    }]
+                }
+            });
+
+
+        }
+               
+
+            }
+        })
+
+    </script>
+    
+</body>
+</html>
